@@ -1,3 +1,6 @@
 from django.urls import path
+from .views import BoardView
 
-urlpatterns = []
+urlpatterns = [
+    path('boards/', BoardView.as_view())
+]
