@@ -18,6 +18,22 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['fullname', 'email', 'password', 'repeated_password']
 
+    def validate_email(self, value):
+        # Prüft, ob die E-Mail bereits existiert.
+        # Wenn ja, wird eine Fehlermeldung ausgelöst (ValidationError).
+        # Wenn nicht, wird der Wert zurückgegeben und die Validierung ist bestanden.
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email already exists.")
+        return value
+
+    def validate_fullname(self, value):
+        # Prüft, ob der Benutzername (fullname/username) bereits existiert.
+        # Wenn ja, wird eine Fehlermeldung ausgelöst (ValidationError).
+        # Wenn nicht, wird der Wert zurückgegeben und die Validierung ist bestanden.
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Fullname already exists.")
+        return value
+
     def validate(self, data):
         # Diese Methode prüft, ob die beiden Passwörter übereinstimmen.
         # Wenn sie unterschiedlich sind, wird eine Fehlermeldung ausgelöst (ValidationError).

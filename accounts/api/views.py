@@ -26,8 +26,11 @@ class RegistrationView(APIView):
                 'email': saved_account.email,
                 'user_id': saved_account.id
             }
+
+            return Response(data, status=201)
         else:
             # Gibt die Validierungsfehler zurück, falls die Daten ungültig sind
             data = serializer.errors
+
         # Antwort an den Client (immer als JSON)
-        return Response(data)
+            return Response(data, status=400)
