@@ -51,3 +51,36 @@ class RegistrationSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password']
         )
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    # Feld 'email' wird im JSON erwartet und auf das Model-Feld 'email' gemappt
+    email = serializers.EmailField(max_length=50)
+    # Feld 'password' wird im JSON erwartet und ist nur zum Schreiben
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        # 'User' ist das Standard-Benutzermodell aus django.contrib.auth.models
+        # 'fields' gibt an, welche Feldnamen im JSON vom Frontend erwartet werden
+        model = User
+        fields = ['email', 'password']
+
+    def validate(self, data):
+        # Diese Methode prüft, ob ein User mit der angegebenen E-Mail existiert
+        # und ob das Passwort korrekt ist.
+        #
+        # 1. User anhand der E-Mail suchen (get wirft Exception, wenn nicht gefunden)
+        try:
+            user = User.objects.get(email=data['email'])
+        except User.DoesNotExist:
+            # Wenn kein User gefunden wurde, wird ein Validierungsfehler ausgelöst
+            raise serializers.ValidationError("User doesn't exist")
+
+        # 2. Passwort prüfen
+        # check_password gibt True zurück, wenn das Passwort korrekt ist
+        if user.check_password(data['password']):
+            # Wenn alles passt, werden die validierten Daten zurückgegeben
+            return data
+        else:
+            # Wenn das Passwort falsch ist, wird ein Validierungsfehler ausgelöst
+            raise serializers.ValidationError("password isn't right")
