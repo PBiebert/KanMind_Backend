@@ -1,12 +1,15 @@
 from django.db import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from accounts.api.serializers import RegistrationSerializer, LoginSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 
 
 class RegistrationView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         # Nimmt die vom Frontend gesendeten Registrierungsdaten entgegen und übergibt sie an den Serializer
         serializer = RegistrationSerializer(data=request.data)
@@ -36,6 +39,8 @@ class RegistrationView(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         # Nimmt die vom Frontend gesendeten Login-Daten entgegen und übergibt sie an den Serializer
         serializer = LoginSerializer(data=request.data)

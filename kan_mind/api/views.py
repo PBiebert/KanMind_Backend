@@ -15,10 +15,11 @@ class BoardView(generics.ListCreateAPIView):
         return Response(serializer.data)
 
     def create(self, request):
-        serializer = BoardCreateSerializer(data=request.data)
+        serializer = BoardCreateSerializer(
+            data=request.data, context={"request": request})
         print([user.id for user in User.objects.all()])
         if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
-        # serializer.save()
