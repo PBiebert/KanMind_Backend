@@ -108,12 +108,12 @@ frontend communicates with this backend via these endpoints.
 
 ## API Endpoints
 
-| Method | Endpoint             | Description         | Auth required |
-| ------ | -------------------- | ------------------- | ------------- |
-| POST   | `/api/registration/` | Register a new user | No            |
-| POST   | `/apilogin/`         | Log in a user       | No            |
-| GET    | `/api/boards/`       | Retrieve all boards | Yes           |
-| ...    | ...                  | ...                 | ...           |
+| Method | Endpoint             | Description         | Auth required | Access        |
+| ------ | -------------------- | ------------------- | ------------- | ------------- |
+| POST   | `/api/registration/` | Register a new user | No            | all           |
+| POST   | `/api/login/`        | Log in a user       | No            | all           |
+| POST   | `/api/boards/`       | Create a Board      | Yes           | owner         |
+| GET    | `/api/boards/`       | Retrieve all boards | Yes           | owner, member |
 
 ---
 

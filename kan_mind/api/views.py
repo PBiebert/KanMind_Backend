@@ -1,8 +1,9 @@
 from rest_framework.response import Response
 from rest_framework import generics
-from kan_mind.models import Board
-from .serializers import BoardSerializer, BoardCreateSerializer
+from django.db.models import Q
 from django.contrib.auth import get_user_model
+from kan_mind.models import Board
+from .serializers import BoardSerializer
 
 User = get_user_model()
 
@@ -12,14 +13,15 @@ class BoardView(generics.ListCreateAPIView):
     serializer_class = BoardSerializer
 
     def list(self, request):
-        queryset = self.get_queryset()
+        user = self.request.user
+        queryset = Board.objects.filter(
+            Q(owner=user) | Q(members=user)).distinct()
         serializer = BoardSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request):
-        serializer = BoardCreateSerializer(
+        serializer = BoardSerializer(
             data=request.data, context={"request": request})
-        print([user.id for user in User.objects.all()])
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

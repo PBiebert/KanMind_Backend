@@ -6,17 +6,11 @@ User = get_user_model()
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Board
-        fields = '__all__'
-
-
-class BoardCreateSerializer(serializers.ModelSerializer):
     owner_id = serializers.PrimaryKeyRelatedField(
         read_only=True, source='owner')
     members = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True)
-    member_count = serializers.SerializerMethodField(read_only=True)
+    member_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Board
@@ -30,6 +24,4 @@ class BoardCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         board = Board.objects.create(owner=user, **validated_data)
         board.members.set(members)
-
-        print(board)
         return board
