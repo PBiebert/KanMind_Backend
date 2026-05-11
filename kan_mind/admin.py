@@ -1,9 +1,9 @@
-# from django.contrib import admin
-# from .models import Board
+from django.contrib import admin
+from .models import Board
 
 
-# class BoardAdmin(admin.ModelAdmin):
-#     list_display = ["title", "owner"]
+class BoardAdmin(admin.ModelAdmin):
+    list_display = ["title", "owner"]
 
 
-# admin.site.register(Board, BoardAdmin)
+admin.site.register(Board, BoardAdmin)

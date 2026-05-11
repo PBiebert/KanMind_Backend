@@ -2,7 +2,9 @@ from rest_framework.response import Response
 from rest_framework import generics
 from kan_mind.models import Board
 from .serializers import BoardSerializer, BoardCreateSerializer
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class BoardView(generics.ListCreateAPIView):
