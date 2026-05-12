@@ -108,15 +108,16 @@ frontend communicates with this backend via these endpoints.
 
 ## API Endpoints
 
-| Method | Endpoint                | Description         | Auth required | Access        |
-| ------ | ----------------------- | ------------------- | ------------- | ------------- |
-| POST   | `/api/registration/`    | Register a new user | No            | all           |
-| POST   | `/api/login/`           | Log in a user       | No            | all           |
-| POST   | `/api/boards/`          | Create a board      | Yes           | owner         |
-| GET    | `/api/boards/`          | Retrieve all boards | Yes           | owner, member |
-| GET    | `/api/boards/<int:pk>/` | Retrieve one board  | Yes           | owner, member |
-| PATCH  | `/api/boards/<int:pk>/` | Update a board      | Yes           | owner, member |
-| DELETE | `/api/boards/<int:pk>/` | Delete a board      | Yes           | owner         |
+| Method | Endpoint                      | Description                    | Auth required | Access         |
+| ------ | ----------------------------- | ------------------------------ | ------------- | -------------- |
+| POST   | `/api/registration/`          | Register a new user            | No            | all            |
+| POST   | `/api/login/`                 | Log in a user                  | No            | all            |
+| GET    | `/api/email-check/?email=...` | Check if user exists by E-Mail | Yes           | Logged-in user |
+| POST   | `/api/boards/`                | Create a board                 | Yes           | owner          |
+| GET    | `/api/boards/`                | Retrieve all boards            | Yes           | owner, member  |
+| GET    | `/api/boards/<int:pk>/`       | Retrieve one board             | Yes           | owner, member  |
+| PATCH  | `/api/boards/<int:pk>/`       | Update a board                 | Yes           | owner, member  |
+| DELETE | `/api/boards/<int:pk>/`       | Delete a board                 | Yes           | owner          |
 
 ---
 

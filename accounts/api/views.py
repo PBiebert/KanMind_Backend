@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from accounts.api.serializers import RegistrationSerializer, LoginSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
+from django.core.validators import validate_email
 
 User = get_user_model()
 
@@ -49,3 +50,23 @@ class LoginView(APIView):
             return Response(data)
         else:
             return Response(serializer.errors, status=400)
+
+
+class FindUserView(APIView):
+
+    def get(self, request):
+        email = request.query_params.get('email')
+        try:
+            validate_email(email)
+            user = User.objects.filter(email=email).first()
+            if user != None:
+                data = {
+                    'id': user.id,
+                    "email": user.email,
+                    "fullname": user.fullname,
+                }
+                return Response(data, status=200)
+            else:
+                return Response({'detail': 'E-mail not found'}, status=404)
+        except:
+            return Response({'detail': 'Invalid request. The email address is missing or has an incorrect format'}, status=400)
