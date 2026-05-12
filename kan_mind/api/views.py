@@ -55,3 +55,12 @@ class BoardDetailView(generics.RetrieveUpdateAPIView):
                 return Response(serializer.errors, status=400)
         else:
             return Response({"detail": "The user must be either a member of the board or the owner of the board."}, status=403)
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        obj = self.get_object()
+        if obj.owner == user:
+            obj.delete()
+            return Response(status=204)
+        else:
+            return Response({"detail": "The user must be the owner of the board."}, status=403)
