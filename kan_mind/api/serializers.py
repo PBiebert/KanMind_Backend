@@ -25,3 +25,20 @@ class BoardSerializer(serializers.ModelSerializer):
         board = Board.objects.create(owner=user, **validated_data)
         board.members.set(members)
         return board
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'fullname']
+
+
+class BoardDetailSerializer(serializers.ModelSerializer):
+    members = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = Board
+        fields = ['id', 'title', 'owner_id', 'members']
