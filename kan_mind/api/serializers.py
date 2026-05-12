@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from kan_mind.models import Board
+from kan_mind.models import Board, Task
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -42,3 +42,17 @@ class BoardDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ['id', 'title', 'owner_id', 'members']
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    assignee_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source='assignee', write_only=True)
+    reviewer_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source='reviewer', write_only=True)
+    assignee = UserDetailSerializer(read_only=True)
+    reviewer = UserDetailSerializer(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ['id', 'board', 'title', 'description', 'status',
+                  'priority', 'assignee', 'assignee_id', 'reviewer', 'reviewer_id', 'due_date']

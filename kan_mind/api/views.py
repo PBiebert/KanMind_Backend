@@ -2,8 +2,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-from kan_mind.models import Board
-from .serializers import BoardSerializer, BoardDetailSerializer
+from kan_mind.models import Board, Task
+from .serializers import BoardSerializer, BoardDetailSerializer, TaskSerializer
 
 User = get_user_model()
 
@@ -64,3 +64,16 @@ class BoardDetailView(generics.RetrieveUpdateAPIView):
             return Response(status=204)
         else:
             return Response({"detail": "The user must be the owner of the board."}, status=403)
+
+
+class TaskCreateView(generics.CreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
