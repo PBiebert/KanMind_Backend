@@ -11,7 +11,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ["id", "author", "created_at"]
+    list_display = ["id", "task", "author", "created_at"]
 
 
 admin.site.register(Board, BoardAdmin)

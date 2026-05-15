@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework import generics, mixins
+from rest_framework import generics
 from rest_framework.response import Response
 
 from kan_mind.models import Board, Task, Comment
-from .premissions import IsBoardMemberOrOwner, IsBoardMember, IsCommentBoardMember
+from .premissions import IsBoardMemberOrOwner, IsBoardMember, IsCommentBoardMember, IsCommentAuthor
 from .serializers import BoardSerializer, BoardDetailSerializer, TaskSerializer, BoardDetailPatchSerializer, TaskCommentSerializer
 
 User = get_user_model()
@@ -57,12 +57,6 @@ class TaskCreateView(generics.CreateAPIView):
             return Response(serializer.errors, status=400)
 
 
-# class CommentView(generics.RetrieveDestroyAPIView):
-#     queryset = Comment
-#     serializer_class = TaskCommentSerializer
-#     permission_classes = [IsCommentBoardMember]
-
-
 class CommentView(generics.ListCreateAPIView):
     queryset = Comment
     serializer_class = TaskCommentSerializer
@@ -84,3 +78,11 @@ class CommentView(generics.ListCreateAPIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+
+class DeleteCommentView(generics.DestroyAPIView):
+    queryset = Comment
+    serializer_class = TaskCommentSerializer
+    permission_classes = [IsCommentAuthor]
+    lookup_field = "id"
+    lookup_url_kwarg = "comment_id"
