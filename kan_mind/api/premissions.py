@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from kan_mind.models import Board
+from kan_mind.models import Board, Task
 
 
 class IsBoardMemberOrOwner(BasePermission):
@@ -22,6 +22,20 @@ class IsBoardMember(BasePermission):
         board_id = request.data.get("board")
         board = Board.objects.get(id=board_id)
         user = request.user
+
+        try:
+            board
+        except Board.DoesNotExist:
+            return False
+        return user in board.members.all()
+
+
+class IsCommentBoardMember(BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+        task_id = view.kwargs.get("pk")
+        task = Task.objects.get(pk=task_id)
+        board = task.board
 
         try:
             board
