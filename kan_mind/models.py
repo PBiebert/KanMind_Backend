@@ -22,10 +22,10 @@ class Task(models.Model):
     PRIORITY_CHOICES = (
         ('low', 'low'),
         ('medium', 'medium'),
-        ('hight', 'hight')
+        ('high', 'high')
     )
 
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name="tasks")
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)

@@ -43,7 +43,6 @@ class TaskCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = TaskSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
-            print("klappt")
             serializer.save()
             return Response(serializer.data, status=200)
         else:
