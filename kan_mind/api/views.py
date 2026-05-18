@@ -5,7 +5,8 @@ from rest_framework.response import Response
 
 from kan_mind.models import Board, Task, Comment
 from .premissions import IsBoardMemberOrOwner, IsBoardMember, IsCommentBoardMember, IsCommentAuthor
-from .serializers import BoardSerializer, BoardDetailSerializer, TaskSerializer, BoardDetailPatchSerializer, TaskCommentSerializer, UpdateSingleTaskSerializer
+from .serializers import (BoardSerializer, BoardDetailSerializer, TaskSerializer,
+                          BoardDetailPatchSerializer, TaskCommentSerializer, UpdateSingleTaskSerializer)
 
 User = get_user_model()
 
@@ -13,6 +14,7 @@ User = get_user_model()
 class BoardView(generics.ListCreateAPIView):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
+    permission_classes = [IsBoardMemberOrOwner]
 
     def list(self, request, *args, **kwargs):
         user = self.request.user
