@@ -4,7 +4,8 @@ from rest_framework import generics, mixins
 from rest_framework.response import Response
 
 from kan_mind.models import Board, Task, Comment
-from .premissions import IsBoardMemberOrOwner, IsBoardMember, IsCommentBoardMember, IsCommentAuthor
+from .premissions import (IsBoardMemberOrOwner, IsBoardMember,
+                          IsCommentBoardMember, IsCommentAuthor, IsCreatorOrOwner)
 from .serializers import (BoardSerializer, BoardDetailSerializer, TaskSerializer,
                           BoardDetailPatchSerializer, TaskCommentSerializer, UpdateSingleTaskSerializer)
 
@@ -65,7 +66,18 @@ class ReviewingTasksView(generics.ListAPIView):
 class SingleTaskView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     queryset = Task.objects.all()
     serializer_class = UpdateSingleTaskSerializer
-    permission_classes = [IsBoardMember]
+
+    def get_permissions(self):
+        if self.request.method == "DELETE":
+            return [IsCreatorOrOwner()]
+        return [IsBoardMember()]
+
+    def get_permissions(self):
+        if self.request.method == 'DELETE':
+            permission_classes = [IsCreatorOrOwner]
+        else:
+            permission_classes = [IsBoardMember]
+        return [permission() for permission in permission_classes]
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
@@ -83,8 +95,8 @@ class TaskCreateView(generics.CreateAPIView):
         serializer = TaskSerializer(
             data=request.data, context={"request": request})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
+            serializer.save(creator=request.user)
+            return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
 

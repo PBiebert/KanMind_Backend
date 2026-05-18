@@ -31,6 +31,8 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES)
+    creator = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='creator')
     assignee = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True, related_name='assignee')
     reviewer = models.ForeignKey(

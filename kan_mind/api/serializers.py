@@ -55,6 +55,24 @@ class TaskSerializer(serializers.ModelSerializer):
         return obj.comment.count()
 
 
+class TaskSerializerWithoutBoardId(TaskSerializer):
+    class Meta:
+        model = Task
+        fields = [
+            "id",
+            "title",
+            "description",
+            "status",
+            "priority",
+            "assignee",
+            "assignee_id",
+            "reviewer",
+            "reviewer_id",
+            "due_date",
+            "comments_count"
+        ]
+
+
 class UpdateSingleTaskSerializer(TaskSerializer):
 
     class Meta(TaskSerializer.Meta):
@@ -76,7 +94,7 @@ class UpdateSingleTaskSerializer(TaskSerializer):
 
 class BoardDetailSerializer(serializers.ModelSerializer):
     members = UserDetailSerializer(many=True, read_only=True)
-    tasks = TaskSerializer(many=True, read_only=True)
+    tasks = TaskSerializerWithoutBoardId(many=True, read_only=True)
 
     class Meta:
         model = Board

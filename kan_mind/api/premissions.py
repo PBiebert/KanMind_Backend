@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission
+from rest_framework.exceptions import NotFound
 
 from kan_mind.models import Board, Task, Comment
 
@@ -32,20 +33,26 @@ class IsBoardMember(BasePermission):
         board = obj.board
         return user in board.members.all()
 
-# nochmal überarbeiten
+
+class IsCreatorOrOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        board = obj.board
+
+        if user == board.owner or user == obj.creator:
+            return True
 
 
 class IsCommentBoardMember(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         task_id = view.kwargs.get("pk")
-        task = Task.objects.get(pk=task_id)
-        board = task.board
 
         try:
-            board
-        except Board.DoesNotExist:
-            return False
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            raise NotFound('Task not found')
+        board = task.board
         return user in board.members.all()
 
 
