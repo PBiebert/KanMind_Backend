@@ -108,16 +108,44 @@ frontend communicates with this backend via these endpoints.
 
 ## API Endpoints
 
-| Method | Endpoint                      | Description                    | Auth required | Access         |
-| ------ | ----------------------------- | ------------------------------ | ------------- | -------------- |
-| POST   | `/api/registration/`          | Register a new user            | No            | all            |
-| POST   | `/api/login/`                 | Log in a user                  | No            | all            |
-| GET    | `/api/email-check/?email=...` | Check if user exists by E-Mail | Yes           | Logged-in user |
-| POST   | `/api/boards/`                | Create a board                 | Yes           | owner          |
-| GET    | `/api/boards/`                | Retrieve all boards            | Yes           | owner, member  |
-| GET    | `/api/boards/<int:pk>/`       | Retrieve one board             | Yes           | owner, member  |
-| PATCH  | `/api/boards/<int:pk>/`       | Update a board                 | Yes           | owner, member  |
-| DELETE | `/api/boards/<int:pk>/`       | Delete a board                 | Yes           | owner          |
+> For full endpoint documentation including request/response examples, status
+> codes and permissions, see [docs/api.md](docs/api.md).
+
+### Auth
+
+| Method | Endpoint                      | Description                     | Auth required | Access         |
+| ------ | ----------------------------- | ------------------------------- | ------------- | -------------- |
+| POST   | `/api/registration/`          | Register a new user             | No            | All            |
+| POST   | `/api/login/`                 | Log in a user                   | No            | All            |
+| GET    | `/api/email-check/?email=...` | Check if a user exists by email | Yes           | Logged-in user |
+
+### Boards
+
+| Method | Endpoint            | Description        | Auth required | Access         |
+| ------ | ------------------- | ------------------ | ------------- | -------------- |
+| POST   | `/api/boards/`      | Create a board     | Yes           | Logged-in user |
+| GET    | `/api/boards/`      | List all boards    | Yes           | Owner, member  |
+| GET    | `/api/boards/<id>/` | Retrieve one board | Yes           | Owner, member  |
+| PATCH  | `/api/boards/<id>/` | Update a board     | Yes           | Owner, member  |
+| DELETE | `/api/boards/<id>/` | Delete a board     | Yes           | Owner only     |
+
+### Tasks
+
+| Method | Endpoint                     | Description               | Auth required | Access                    |
+| ------ | ---------------------------- | ------------------------- | ------------- | ------------------------- |
+| POST   | `/api/tasks/`                | Create a task             | Yes           | Board member              |
+| GET    | `/api/tasks/assigned-to-me/` | List tasks assigned to me | Yes           | Logged-in user            |
+| GET    | `/api/tasks/reviewing/`      | List tasks I am reviewing | Yes           | Logged-in user            |
+| PATCH  | `/api/tasks/<id>/`           | Update a task             | Yes           | Board member              |
+| DELETE | `/api/tasks/<id>/`           | Delete a task             | Yes           | Task creator, board owner |
+
+### Comments
+
+| Method | Endpoint                                     | Description             | Auth required | Access         |
+| ------ | -------------------------------------------- | ----------------------- | ------------- | -------------- |
+| GET    | `/api/tasks/<id>/comments/`                  | List comments of a task | Yes           | Board member   |
+| POST   | `/api/tasks/<id>/comments/`                  | Add a comment to a task | Yes           | Board member   |
+| DELETE | `/api/tasks/<task_id>/comments/<comment_id>` | Delete a comment        | Yes           | Comment author |
 
 ---
 
@@ -125,7 +153,7 @@ frontend communicates with this backend via these endpoints.
 
 The corresponding frontend repository can be found here:
 
-> [Link to be added]
+[Frontend Repository](https://github.com/)
 
 ---
 
