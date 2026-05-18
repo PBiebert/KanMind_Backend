@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.response import Response
 
 from kan_mind.models import Board, Task, Comment
 from .premissions import IsBoardMemberOrOwner, IsBoardMember, IsCommentBoardMember, IsCommentAuthor
-from .serializers import BoardSerializer, BoardDetailSerializer, TaskSerializer, BoardDetailPatchSerializer, TaskCommentSerializer
+from .serializers import BoardSerializer, BoardDetailSerializer, TaskSerializer, BoardDetailPatchSerializer, TaskCommentSerializer, UpdateSingleTaskSerializer
 
 User = get_user_model()
 
@@ -40,6 +40,36 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'PATCH':
             return BoardDetailPatchSerializer
         return BoardDetailSerializer
+
+
+class AssignedToMeTasksView(generics.ListAPIView):
+    queryset = Task
+    serializer_class = TaskSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(assignee=user)
+
+
+class ReviewingTasksView(generics.ListAPIView):
+    queryset = Task
+    serializer_class = TaskSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(reviewer=user)
+
+
+class SingleTaskView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = Task.objects.all()
+    serializer_class = UpdateSingleTaskSerializer
+    permission_classes = [IsBoardMember]
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class TaskCreateView(generics.CreateAPIView):

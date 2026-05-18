@@ -55,6 +55,25 @@ class TaskSerializer(serializers.ModelSerializer):
         return obj.comment.count()
 
 
+class UpdateSingleTaskSerializer(TaskSerializer):
+
+    class Meta(TaskSerializer.Meta):
+        model = Task
+        fields = [
+            "id",
+            "title",
+            "description",
+            "status",
+            "priority",
+            "assignee",
+            "assignee_id",
+            "reviewer",
+            "reviewer_id",
+            "due_date",
+            "comments_count"
+        ]
+
+
 class BoardDetailSerializer(serializers.ModelSerializer):
     members = UserDetailSerializer(many=True, read_only=True)
     tasks = TaskSerializer(many=True, read_only=True)
@@ -83,7 +102,8 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ["title", "owner_id", "members", "member_count"]
+        fields = ["title", "owner_id", "members",
+                  "member_count"]
 
     def get_member_count(self, obj):
         return obj.members.count()
