@@ -42,7 +42,7 @@ frontend communicates with this backend via these endpoints.
    ```bash
    python -m venv .venv
    source env/bin/activate        # Mac/Linux
-   env\Scripts\activate           # Windows
+   .venv\Scripts\activate           # Windows
    ```
 
 3. Install dependencies:
