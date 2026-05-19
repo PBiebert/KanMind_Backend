@@ -40,7 +40,7 @@ frontend communicates with this backend via these endpoints.
 2. Create and activate a virtual environment:
 
    ```bash
-   python -m venv env
+   python -m venv .venv
    source env/bin/activate        # Mac/Linux
    env\Scripts\activate           # Windows
    ```
