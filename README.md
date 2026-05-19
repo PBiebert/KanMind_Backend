@@ -41,7 +41,7 @@ frontend communicates with this backend via these endpoints.
 
    ```bash
    python -m venv .venv
-   source env/bin/activate        # Mac/Linux
+   source .venv/bin/activate        # Mac/Linux
    .venv\Scripts\activate           # Windows
    ```
 
