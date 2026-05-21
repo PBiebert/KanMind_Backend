@@ -2,12 +2,25 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework import generics, mixins
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 
 from kan_mind.models import Board, Task, Comment
-from .premissions import (IsBoardMemberOrOwner, IsBoardMember,
-                          IsCommentBoardMember, IsCommentAuthor, IsCreatorOrOwner)
-from .serializers import (BoardSerializer, BoardDetailSerializer, TaskSerializer,
-                          BoardDetailPatchSerializer, TaskCommentSerializer, UpdateSingleTaskSerializer)
+from .premissions import (
+    IsBoardMemberOrOwner,
+    IsBoardMember,
+    IsCommentBoardMember,
+    IsCommentAuthor,
+    IsCreatorOrOwner,
+)
+from .serializers import (
+    BoardSerializer,
+    BoardDetailSerializer,
+    TaskSerializer,
+    BoardDetailPatchSerializer,
+    TaskCommentSerializer,
+    UpdateSingleTaskSerializer,
+)
 
 User = get_user_model()
 
@@ -22,25 +35,23 @@ class BoardView(generics.ListCreateAPIView):
 
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
-    permission_classes = [IsBoardMemberOrOwner]
+    permission_classes = [IsAuthenticated, IsBoardMemberOrOwner]
 
     def list(self, request, *args, **kwargs):
         """Returns all boards the user belongs to (as owner or member)."""
         user = self.request.user
-        queryset = Board.objects.filter(
-            Q(owner=user) | Q(members=user)).distinct()
+        queryset = Board.objects.filter(Q(owner=user) | Q(members=user)).distinct()
         serializer = BoardSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         """Creates a new board with the logged-in user as owner."""
-        serializer = BoardSerializer(
-            data=request.data, context={"request": request})
+        serializer = BoardSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=400)
 
 
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -57,7 +68,7 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         """Selects the serializer based on the HTTP method."""
-        if self.request.method == 'PATCH':
+        if self.request.method == "PATCH":
             return BoardDetailPatchSerializer
         return BoardDetailSerializer
 
@@ -90,7 +101,9 @@ class ReviewingTasksView(generics.ListAPIView):
         return Task.objects.filter(reviewer=user)
 
 
-class SingleTaskView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+class SingleTaskView(
+    mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView
+):
     """
     API view for updating (PATCH) and deleting (DELETE) a single task.
 
@@ -108,7 +121,7 @@ class SingleTaskView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics
 
     def get_permissions(self):
         """Sets permissions depending on the HTTP method."""
-        if self.request.method == 'DELETE':
+        if self.request.method == "DELETE":
             permission_classes = [IsCreatorOrOwner]
         else:
             permission_classes = [IsBoardMember]
@@ -137,8 +150,7 @@ class TaskCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         """Creates a new task and sets the logged-in user as creator."""
-        serializer = TaskSerializer(
-            data=request.data, context={"request": request})
+        serializer = TaskSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save(creator=request.user)
             return Response(serializer.data, status=201)
@@ -160,22 +172,21 @@ class CommentView(generics.ListCreateAPIView):
 
     def get(self, request, *args, **kwargs):
         """Returns all comments for the specified task."""
-        task = Task.objects.get(pk=self.kwargs.get('pk'))
+        task = Task.objects.get(pk=self.kwargs.get("pk"))
         comment_list = task.comment.all()
         serializer = TaskCommentSerializer(comment_list, many=True)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         """Creates a new comment and assigns it to the task and author."""
-        serializer = TaskCommentSerializer(
-            data=request.data)
-        task = Task.objects.get(pk=self.kwargs.get('pk'))
+        serializer = TaskCommentSerializer(data=request.data)
+        task = Task.objects.get(pk=self.kwargs.get("pk"))
 
         if serializer.is_valid():
             serializer.save(author=request.user, task=task)
-            return Response(serializer.data)
+            return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=400)
 
 
 class DeleteCommentView(generics.DestroyAPIView):

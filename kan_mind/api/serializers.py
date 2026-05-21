@@ -28,13 +28,14 @@ class TaskCommentSerializer(serializers.ModelSerializer):
     """
 
     created_at = serializers.DateTimeField(
-        read_only=True,)
-    author = serializers.CharField(source='author.fullname', read_only=True)
+        read_only=True,
+    )
+    author = serializers.CharField(source="author.fullname", read_only=True)
     content = serializers.CharField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'created_at', 'author', 'content']
+        fields = ["id", "created_at", "author", "content"]
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -70,7 +71,7 @@ class TaskSerializer(serializers.ModelSerializer):
             "reviewer",
             "reviewer_id",
             "due_date",
-            "comments_count"
+            "comments_count",
         ]
 
     def get_comments_count(self, obj):
@@ -100,7 +101,7 @@ class TaskSerializerWithoutBoardId(TaskSerializer):
             "reviewer",
             "reviewer_id",
             "due_date",
-            "comments_count"
+            "comments_count",
         ]
 
 
@@ -125,7 +126,7 @@ class UpdateSingleTaskSerializer(TaskSerializer):
             "reviewer",
             "reviewer_id",
             "due_date",
-            "comments_count"
+            "comments_count",
         ]
 
 
@@ -152,13 +153,15 @@ class BoardDetailPatchSerializer(serializers.ModelSerializer):
     Used to represent the current board data in the response after an update.
     """
 
-    members_data = UserDetailSerializer(
-        many=True, read_only=True, source='members')
-    owner_data = UserDetailSerializer(read_only=True, source='owner')
+    members = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True
+    )
+    members_data = UserDetailSerializer(many=True, read_only=True, source="members")
+    owner_data = UserDetailSerializer(read_only=True, source="owner")
 
     class Meta:
         model = Board
-        fields = ["id", "title", "owner_data", "members_data"]
+        fields = ["id", "title", "members", "owner_data", "members_data"]
 
 
 class BoardSerializer(serializers.ModelSerializer):
@@ -170,10 +173,10 @@ class BoardSerializer(serializers.ModelSerializer):
     Members are provided by ID when creating (write-only).
     """
 
-    owner_id = serializers.PrimaryKeyRelatedField(
-        read_only=True, source="owner")
+    owner_id = serializers.PrimaryKeyRelatedField(read_only=True, source="owner")
     members = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True)
+        queryset=User.objects.all(), many=True, write_only=True
+    )
     member_count = serializers.SerializerMethodField()
     ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
@@ -181,8 +184,16 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ["id", "title", "member_count", "ticket_count", "tasks_to_do_count", "tasks_high_prio_count", "owner_id", "members",
-                  ]
+        fields = [
+            "id",
+            "title",
+            "member_count",
+            "ticket_count",
+            "tasks_to_do_count",
+            "tasks_high_prio_count",
+            "owner_id",
+            "members",
+        ]
 
     def get_member_count(self, obj):
         """Returns the number of members of the board."""
