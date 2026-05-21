@@ -71,7 +71,7 @@ class LoginView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             data = {
                 "token": token.key,
-                "fullname": user.username,
+                "fullname": user.fullname,
                 "email": user.email,
                 "user_id": user.id
             }

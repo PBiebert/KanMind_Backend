@@ -69,7 +69,6 @@ frontend communicates with this backend via these endpoints.
    ```env
    SECRET_KEY='your_generated_key_here'
    DEBUG=True
-   ALLOWED_HOSTS=localhost,127.0.0.1
    ```
 
    > **Note:** Use `DEBUG=True` for local development only. Set it to `False` in
