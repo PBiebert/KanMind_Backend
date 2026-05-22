@@ -122,7 +122,7 @@ class SingleTaskView(
     def get_permissions(self):
         """Sets permissions depending on the HTTP method."""
         if self.request.method == "DELETE":
-            permission_classes = [IsCreatorOrOwner]
+            permission_classes = [IsAuthenticated, IsCreatorOrOwner]
         else:
             permission_classes = [IsBoardMember]
         return [permission() for permission in permission_classes]
@@ -199,6 +199,6 @@ class DeleteCommentView(generics.DestroyAPIView):
 
     queryset = Comment
     serializer_class = TaskCommentSerializer
-    permission_classes = [IsCommentAuthor]
+    permission_classes = [IsAuthenticated, IsCommentAuthor]
     lookup_field = "id"
     lookup_url_kwarg = "comment_id"

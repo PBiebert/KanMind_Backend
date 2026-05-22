@@ -15,9 +15,7 @@ class IsBoardMemberOrOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         """Checks if the user is the owner (for DELETE) or a member of the board."""
         user = request.user
-        if (
-            request.method == "DELETE"
-        ):
+        if request.method == "DELETE":
             return obj.owner == user
         return obj.owner == user or user in obj.members.all()
 
@@ -46,7 +44,7 @@ class IsBoardMember(BasePermission):
         try:
             board = Board.objects.get(id=board_id)
         except Board.DoesNotExist:
-            return False
+            raise NotFound("Board not Found")
         return user in board.members.all()
 
     def has_object_permission(self, request, view, obj):
@@ -90,7 +88,7 @@ class IsCommentBoardMember(BasePermission):
         try:
             task = Task.objects.get(pk=task_id)
         except Task.DoesNotExist:
-            raise NotFound('Task not found')
+            raise NotFound("Task not found")
         board = task.board
         return user in board.members.all()
 
