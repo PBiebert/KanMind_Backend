@@ -152,7 +152,7 @@ frontend communicates with this backend via these endpoints.
 
 The corresponding frontend repository can be found here:
 
-[Frontend Repository](https://github.com/)
+[Frontend Repository](https://github.com/PBiebert/KanMind_Frontend)
 
 ---
 
